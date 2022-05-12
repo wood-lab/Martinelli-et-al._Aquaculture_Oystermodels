@@ -7,6 +7,7 @@ library(corrplot)
 library(zoo)
 library(lme4) 
 library(car)
+library(lubridate)
 
 ###########################################################
 ## ADDING PREVALENCE DATASET
@@ -35,11 +36,16 @@ corrplot(matrix,method="number",type="lower",tl.col="black",tl.srt=45,mar=c(0,0,
 yq <- as.yearqtr(as.yearmon(prevalence$Date, "%m/%d/%Y") + 1/12)
 prevalence$Season <- factor(format(yq, "%q"), levels = 1:4, 
                             labels = c("Winter", "Winter", "Summer", "Summer"))
-prevalence <- prevalence %>% separate(Date, sep="/", into = c('Month', 'Day', 'Year'))
+prevalence <- prevalence %>% mutate(Date1 = Date)
+dmy(prevalence$Date)
+## FIX HERE!
+
+
+
+prevalence <- prevalence %>% separate(Date1, sep="/", into = c('Month', 'Day', 'Year'))
 
 #### SCALING each column individually
 ###########################################################
-# scale(x, center = TRUE, scale = TRUE)
 prevalence$Lat_sc <- scale(prevalence$Lat, center = TRUE, scale = TRUE)
 prevalence$Lng_sc <- scale(prevalence$Lng, center = TRUE, scale = TRUE)
 prevalence$Shell_g_sc <- scale(prevalence$Shell_g, center = TRUE, scale = TRUE)
@@ -51,9 +57,17 @@ prevalence$Thick_sc <- scale(prevalence$Thick, center = TRUE, scale = TRUE)
 
 ## MODEL TESTING FOR PREVALENCE - ALL STATES
 ########################
-model1 <- glmer(Infested ~ Tissue_g_sc + y_sc + Season + Thick_sc + Culture + Ploidy + (1|State/Bay/Farm), family="binomial", data = prevalence)
+model1 <- glmer(Infested ~ Tissue_g_sc + y_sc + Season + (1|Date) + Thick_sc + Culture + Ploidy + (1|State/Bay/Farm), family="binomial", data = prevalence)
 summary(model1)
+anova(model1)
 vif(model1)
+
+# try random effect for Date, create that one again (1|Date)
+# explore interstate variab between states w/interactions:
+# interaction w/ state and season
+# interaction w/ state and culture
+# plots! ggpredict, ggeffects
+
 
 # FAILS TO CONVERGE WITH LAT + (1|Lat), its either bay/farm or lat
 # The intercept is the predicted value of the dependent variable when the independent variables are 0
@@ -80,7 +94,7 @@ summary(modelor)
 ## ALASKA
 # glm as there's 4 single-farm bay, out of total 5 bays
 ak <- subset(prevalence, prevalence$State =='AK') # only dips in AK
-modelak <- glm(Infested ~ Tissue_g_sc + y_sc + Thick_sc + Culture + Season + Farm, family="binomial", data = ak)
+modelak <- glmer(Infested ~ Tissue_g_sc + y_sc + Thick_sc + Culture + Season + (1|Farm), family="binomial", data = ak)
 summary(modelak)
 
 
