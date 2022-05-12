@@ -12,7 +12,7 @@ library(lubridate)
 ###########################################################
 ## ADDING PREVALENCE DATASET
 ###########################################################
-data <- read.table("master_spreadsheet_all.csv", header=T,sep=",")
+prevalence <- read.table("master_spreadsheet_all.csv", header=T,sep=",")
 prevalence <- subset(prevalence, prevalence$Valve =='R') # only keep R valves
 # dim: 4085, 19 
 
@@ -35,12 +35,10 @@ yq <- as.yearqtr(as.yearmon(prevalence$Date, "%m/%d/%Y") + 1/12)
 prevalence$Season <- factor(format(yq, "%q"), levels = 1:4, 
                             labels = c("Winter", "Winter", "Summer", "Summer"))
 prevalence <- prevalence %>% mutate(Date1 = Date)
-dmy(prevalence$Date)
-## FIX HERE!
-
-
-
-prevalence <- prevalence %>% separate(Date1, sep="/", into = c('Month', 'Day', 'Year'))
+prevalence$Date1 <- dmy(prevalence$Date1)
+prevalence <- prevalence %>% separate(Date1, sep="-", into = c('Year', 'Day', 'Month'))
+prevalence$Date <- dmy(prevalence$Date)
+prevalence$Year <- as.numeric(prevalence$Year)
 
 #### SCALING each column individually
 ###########################################################
@@ -52,29 +50,26 @@ prevalence$x_sc <- scale(prevalence$x, center = TRUE, scale = TRUE)
 prevalence$y_sc <- scale(prevalence$y, center = TRUE, scale = TRUE)
 prevalence$z_sc <- scale(prevalence$z, center = TRUE, scale = TRUE)
 prevalence$Thick_sc <- scale(prevalence$Thick, center = TRUE, scale = TRUE)
+prevalence$Date_sc <- scale(prevalence$Date, center = TRUE, scale = TRUE)
+prevalence$Year_sc <- scale(prevalence$Year, center = TRUE, scale = TRUE)
 
 ## MODEL TESTING FOR PREVALENCE - ALL STATES
 ########################
-model1 <- glmer(Infested ~ Tissue_g_sc + y_sc + Season + (1|Date) + Thick_sc + Culture + Ploidy + (1|State/Bay/Farm), family="binomial", data = prevalence)
+model1 <- glmer(Infested ~ y_sc + Thick_sc + (1|Date) + Season + Culture + Ploidy + (1|State/Bay/Farm), family="binomial", data = prevalence)
 summary(model1)
 anova(model1)
 vif(model1)
 
-# try random effect for Date, create that one again (1|Date)
-# explore interstate variab between states w/interactions:
-# interaction w/ state and season
-# interaction w/ state and culture
+# try random effect for Date, create that one again , Thick_sc, Tissue_g_sc
+# explore interstate variab w/interactions: State*Season, State*Culture
 # plots! ggpredict, ggeffects
 
-
-# FAILS TO CONVERGE WITH LAT + (1|Lat), its either bay/farm or lat
 # The intercept is the predicted value of the dependent variable when the independent variables are 0
 # estimate of intercept, -2.363988, is the log odd of infested being 1
 # a 1 unit increase in culture on is associate with a 0.44 increase in the log odd of infested being 1
 
 ########################
 ## WASHINGTON # glm as there's 9 single-farm bay, out of total 12 bays
-# CHECK PLOIDY WA - where are diploids??!!
 wa <- subset(prevalence, prevalence$State =='WA')
 modelwa <- glmer(Infested ~ Tissue_g_sc + y_sc + Thick_sc + Culture + Season + (1|Bay/Farm), family="binomial", data = wa)
 summary(modelwa) 
