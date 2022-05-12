@@ -12,9 +12,7 @@ library(lubridate)
 ###########################################################
 ## ADDING PREVALENCE DATASET
 ###########################################################
-setwd('/Users/jmartine/Desktop/buoys/')
-prevalence <- read.csv('master_spreadsheet_all.csv', header=TRUE, row.names = NULL, stringsAsFactors=FALSE,  sep=',') # na.strings=c('NA','\\N')
-# remove L valves to avoid duplication of weights etc
+data <- read.table("master_spreadsheet_all.csv", header=T,sep=",")
 prevalence <- subset(prevalence, prevalence$Valve =='R') # only keep R valves
 # dim: 4085, 19 
 
