@@ -55,14 +55,14 @@ prevalence$Year_sc <- scale(prevalence$Year, center = TRUE, scale = TRUE)
 
 ## MODEL TESTING FOR PREVALENCE - ALL STATES
 ########################
-model1 <- glmer(Infested ~ y_sc + Thick_sc + (1|Date) + Season + Culture + Ploidy + (1|State/Bay/Farm), family="binomial", data = prevalence)
+model1 <- glmer(Infested ~ y_sc + Thick_sc + Culture + Season + Ploidy + Tissue_g_sc + (1|State/Bay/Farm), family="binomial", data = prevalence)
 summary(model1)
 anova(model1)
 vif(model1)
 
-# try random effect for Date, create that one again , Thick_sc, Tissue_g_sc
-# explore interstate variab w/interactions: State*Season, State*Culture
-# plots! ggpredict, ggeffects
+# + (1|Date) DOES NOT CONVERGE
+# + State*Season, State*Culture: DOES NOT CONVERGE
+# ggpredict, ggeffects
 
 # The intercept is the predicted value of the dependent variable when the independent variables are 0
 # estimate of intercept, -2.363988, is the log odd of infested being 1
