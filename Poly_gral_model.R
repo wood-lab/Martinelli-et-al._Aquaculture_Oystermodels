@@ -63,7 +63,21 @@ anova(model1)
 vif(model1)
 
 ## trying out a plot
-allstates <- ggPredict(model1,c("Summer"))
+allstates <- ggpredict(model1,c("y_sc","Season"))
+
+allstates_plot<-ggplot(allstates,aes(x,predicted,color=group), color=group)+
+        scale_color_manual(values=c("#7FCDBB","#FED976"))+ #F03B20
+        geom_point(size=4)+
+        geom_errorbar(data=allstates,mapping=aes(x=x,ymin=conf.low,ymax=conf.high),width=0.03)+
+        geom_line(aes(group=group))+
+        xlab("Shell height")+
+        ylab(expression(paste("Predicted infestation")))+
+        theme_minimal()+
+        theme(plot.title=element_text(size=14,hjust=0.5,face="plain"),axis.text.y=element_text(size=10),axis.title.y=element_text(size=9),axis.text.x=element_text(size=14),axis.title.x=element_text(size=10),panel.background=element_rect(fill="white",color="black"),panel.grid.major=element_line(color="grey95"),panel.grid.minor=element_line(color=NA),plot.margin=unit(c(0,0,0,0),"cm"))+
+        #scale_x_discrete(limits=rev(levels(allstates$x)),labels=c("fresh","frozen"))+
+        theme(legend.position="none")
+allstates_plot
+
 
 
 
