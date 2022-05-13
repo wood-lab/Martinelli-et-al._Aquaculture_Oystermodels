@@ -8,6 +8,7 @@ library(zoo)
 library(lme4) 
 library(car)
 library(lubridate)
+tidiverse_update()
 
 ###########################################################
 ## ADDING PREVALENCE DATASET
@@ -59,6 +60,11 @@ model1 <- glmer(Infested ~ Tissue_g_sc + y_sc + Thick_sc + Culture + Season + Pl
 summary(model1)
 anova(model1)
 vif(model1)
+
+## trying out a plot
+allstates <- ggpredict(model1,c("Summer"))
+
+
 
 # + (1|Date) or (1|Year) DOES NOT CONVERGE
 # + State*Season, State*Culture: DOES NOT CONVERGE
