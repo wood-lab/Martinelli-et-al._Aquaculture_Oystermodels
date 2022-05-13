@@ -8,7 +8,8 @@ library(zoo)
 library(lme4) 
 library(car)
 library(lubridate)
-tidiverse_update()
+library(devtools)
+library(ggeffects)
 
 ###########################################################
 ## ADDING PREVALENCE DATASET
@@ -62,7 +63,7 @@ anova(model1)
 vif(model1)
 
 ## trying out a plot
-allstates <- ggpredict(model1,c("Summer"))
+allstates <- ggPredict(model1,c("Summer"))
 
 
 
