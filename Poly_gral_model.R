@@ -1,8 +1,7 @@
 ### WORKING DIRECTORY AND PACKAGES
 ###########################################################
-library(tidyverse)
-library(tidyr)
 library(plyr)
+library(tidyverse)
 library(corrplot) 
 library(zoo)
 library(lme4) 
@@ -10,6 +9,8 @@ library(car)
 library(lubridate)
 library(devtools)
 library(ggeffects)
+library(statmod)
+library(MASS)
 
 ###########################################################
 ## ADDING PREVALENCE DATASET
@@ -61,6 +62,8 @@ model1 <- glmer(Infested ~ Tissue_g_sc + y_sc + Thick_sc + Culture + Season + Pl
 summary(model1)
 anova(model1)
 vif(model1)
+
+model1 <- glmmPQL(Infested ~ Tissue_g_sc + y_sc + Thick_sc + Culture + Season + Ploidy +  (1|State/Bay/Farm), family=binomial, data = prevalence)
 
 ## trying out a plot
 allstates <- ggpredict(model1,c("y_sc","Season"))
