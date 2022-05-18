@@ -10,7 +10,6 @@ library(lubridate)
 library(devtools)
 library(ggeffects)
 library(statmod)
-library(MASS)
 
 ###########################################################
 ## ADDING PREVALENCE DATASET
@@ -58,12 +57,19 @@ prevalence$Year_sc <- scale(prevalence$Year, center = TRUE, scale = TRUE)
 
 ## MODEL TESTING FOR PREVALENCE - ALL STATES
 ########################
-model1 <- glmer(Infested ~ Tissue_g_sc + y_sc + Thick_sc + Culture + Season + Ploidy +  (1|State/Bay/Farm), family="binomial", data = prevalence)
+model1 <- glmer(Infested ~ Tissue_g_sc + y_sc + Thick_sc + Culture + Season + Ploidy + (1|Year) + (1|State/Bay/Farm), family="binomial", data = prevalence)
 summary(model1)
 anova(model1)
 vif(model1)
 
-model1 <- glmmPQL(Infested ~ Tissue_g_sc + y_sc + Thick_sc + Culture + Season + Ploidy, random=list(~1|State/Bay/Farm, ~1|Year_sc), family=binomial(link = logit), data = prevalence)
+# + State*Season, State*Culture: DOES NOT CONVERGE
+# ggpredict, ggeffects
+
+
+
+
+
+
 
 ## trying out a plot
 allstates <- ggpredict(model1,c("y_sc","Season"))
@@ -81,12 +87,6 @@ allstates_plot<-ggplot(allstates,aes(x,predicted,color=group), color=group)+
         theme(legend.position="none")
 allstates_plot
 
-
-
-
-# + (1|Date) or (1|Year) DOES NOT CONVERGE
-# + State*Season, State*Culture: DOES NOT CONVERGE
-# ggpredict, ggeffects
 
 # The intercept is the predicted value of the dependent variable when the independent variables are 0
 # estimate of intercept, -2.363988, is the log odd of infested being 1
