@@ -63,7 +63,7 @@ summary(model1)
 anova(model1)
 vif(model1)
 
-model1 <- glmmPQL(Infested ~ Tissue_g_sc + y_sc + Thick_sc + Culture + Season + Ploidy +  (1|State/Bay/Farm), family=binomial, data = prevalence)
+model1 <- glmmPQL(Infested ~ Tissue_g_sc + y_sc + Thick_sc + Culture + Season + Ploidy, random=list(~1|State/Bay/Farm, ~1|Year_sc), family=binomial(link = logit), data = prevalence)
 
 ## trying out a plot
 allstates <- ggpredict(model1,c("y_sc","Season"))
