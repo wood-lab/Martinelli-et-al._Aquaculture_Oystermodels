@@ -61,9 +61,32 @@ model1 <- glmer(Infested ~ Tissue_g_sc + y_sc + Thick_sc + Culture + Season + Pl
 summary(model1)
 anova(model1)
 vif(model1)
-
+#  + 
 # + State*Season, State*Culture: DOES NOT CONVERGE
 # ggpredict, ggeffects
+
+######################## (1|Date) +
+## WASHINGTON # glm as there's 9 single-farm bay, out of total 12 bays
+wa <- subset(prevalence, prevalence$State =='WA')
+modelwa <- glmer(Infested ~ Tissue_g_sc + y_sc + Thick_sc + (1|Year) + Culture + Season + Ploidy + (1|Bay/Farm), family="binomial", data = wa)
+summary(modelwa) # COVERGES WITHOUT DATE
+
+## CALIFORNIA
+ca <- subset(prevalence, prevalence$State =='CA')
+modelca <- glmer(Infested ~ Tissue_g_sc + y_sc + Thick_sc + (1|Year) + Culture + Season + Ploidy + (1|Bay/Farm), family="binomial", data = ca)
+summary(modelca)
+
+## OREGON ## CHECK WHATS WRONG HERE
+or <- subset(prevalence, prevalence$State =='OR')
+modelor <- glmer(Infested ~ Tissue_g_sc + y_sc + Thick_sc + (1|Year) + Culture + Season + Ploidy + (1|Bay/Farm), family="binomial", data = or)
+summary(modelor)
+
+## ALASKA
+# glm as there's 4 single-farm bay, out of total 5 bays (1|Year)
+ak <- subset(prevalence, prevalence$State =='AK') # only dips in AK
+modelak <- glmer(Infested ~ Tissue_g_sc + y_sc + Thick_sc + Culture + Season + (1|Farm), family="binomial", data = ak)
+summary(modelak)
+
 
 
 
@@ -91,27 +114,4 @@ allstates_plot
 # The intercept is the predicted value of the dependent variable when the independent variables are 0
 # estimate of intercept, -2.363988, is the log odd of infested being 1
 # a 1 unit increase in culture on is associate with a 0.44 increase in the log odd of infested being 1
-
-######################## (1|Date) +
-## WASHINGTON # glm as there's 9 single-farm bay, out of total 12 bays
-wa <- subset(prevalence, prevalence$State =='WA')
-modelwa <- glmer(Infested ~ Tissue_g_sc + y_sc + Thick_sc + (1|Year) + Culture + Season + Ploidy + (1|Bay/Farm), family="binomial", data = wa)
-summary(modelwa) # COVERGES WITHOUT DATE
-
-## CALIFORNIA
-ca <- subset(prevalence, prevalence$State =='CA')
-modelca <- glmer(Infested ~ Tissue_g_sc + y_sc + Thick_sc + (1|Year) + Culture + Season + Ploidy + (1|Bay/Farm), family="binomial", data = ca)
-summary(modelca)
-
-## OREGON 
-or <- subset(prevalence, prevalence$State =='OR')
-modelor <- glmer(Infested ~ Tissue_g_sc + y_sc + Thick_sc + (1|Year) + Culture + Season + Ploidy + (1|Bay/Farm), family="binomial", data = or)
-summary(modelor)
-
-## ALASKA
-# glm as there's 4 single-farm bay, out of total 5 bays (1|Year)
-ak <- subset(prevalence, prevalence$State =='AK') # only dips in AK
-modelak <- glmer(Infested ~ Tissue_g_sc + y_sc + Thick_sc + Culture + Season + (1|Farm), family="binomial", data = ak)
-summary(modelak)
-
 
