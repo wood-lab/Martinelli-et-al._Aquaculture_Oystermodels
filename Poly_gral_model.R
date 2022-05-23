@@ -37,9 +37,9 @@ yq <- as.yearqtr(as.yearmon(prevalence$Date, "%m/%d/%Y") + 1/12)
 prevalence$Season <- factor(format(yq, "%q"), levels = 1:4, 
                             labels = c("Winter", "Winter", "Summer", "Summer"))
 prevalence <- prevalence %>% mutate(Date1 = Date)
-prevalence$Date1 <- dmy(prevalence$Date1)
-prevalence <- prevalence %>% separate(Date1, sep="-", into = c('Year', 'Day', 'Month'))
-prevalence$Date <- dmy(prevalence$Date)
+prevalence$Date1 <- mdy(prevalence$Date1)
+prevalence <- prevalence %>% separate(Date1, sep="-", into = c('Year','Month', 'Day'))
+prevalence$Date <- mdy(prevalence$Date)
 prevalence$Year <- as.numeric(prevalence$Year)
 
 #### SCALING each column individually
@@ -57,10 +57,13 @@ prevalence$Year_sc <- scale(prevalence$Year, center = TRUE, scale = TRUE)
 
 ## MODEL TESTING FOR PREVALENCE - ALL STATES
 ########################
-model1 <- glmer(Infested ~ y_sc + Culture + Season + Ploidy + Thick_sc + (1|Year_sc) + (1|State/Farm), family="binomial", data = prevalence)
+model1 <- glmer(Infested ~ y_sc + Culture + Ploidy + Season + Thick_sc + (1|Year_sc) + (1|State/Farm), family="binomial", data = prevalence)
 summary(model1)
 anova(model1)
 vif(model1)
+
+model2 <- glmer(Infested ~ y_sc + Ploidy + Season*State + Culture*State + (1|Year_sc) + (1|Farm), family="binomial", data = prevalence)
+summary(model2)
 
 ## higher infestation in winter, higher pH in winter (pH decreases with higher T)
 
