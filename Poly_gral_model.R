@@ -62,6 +62,8 @@ summary(model1)
 anova(model1)
 vif(model1)
 
+## higher infestation in winter, higher pH in winter (pH decreases with higher T)
+
 # modified state/bay/season and got rid of bay
 # + Tissue_g_sc
 # + State*Season, State*Culture: DOES NOT CONVERGE
@@ -71,7 +73,7 @@ vif(model1)
 ## WASHINGTON # similar number bay to farm
 wa <- subset(prevalence, prevalence$State =='WA')
 modelwa <- glmer(Infested ~ y_sc + Culture + Season + Ploidy + (1|Year_sc) + (1|Bay), family="binomial", data = wa)
-summary(modelwa) # COVERGES WITHOUT DATE
+summary(modelwa)
 
 ## CALIFORNIA
 ca <- subset(prevalence, prevalence$State =='CA')
