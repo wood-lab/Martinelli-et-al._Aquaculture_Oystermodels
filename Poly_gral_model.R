@@ -64,13 +64,36 @@ vif(model1)
 
 model2 <- glmer(Infested ~ y_sc + Ploidy + Season*State + Culture*State + (1|Year_sc) + (1|Farm), family="binomial", data = prevalence)
 summary(model2)
+anova(model2)
+vif(model2)
+
+## trying out a plot
+allstates <- ggpredict(model1,c("y_sc","Season"))
+
+allstates_plot<-ggplot(allstates,aes(x,predicted,color=group), color=group)+
+        scale_color_manual(values=c("blue","turquoise"))+ #F03B20 #7FCDBB
+        geom_point(size=4)+
+        geom_errorbar(data=allstates,mapping=aes(x=x,ymin=conf.low,ymax=conf.high),width=0.03)+
+        geom_line(aes(group=group))+
+        xlab("Shell height")+
+        ylab(expression(paste("Predicted infestation")))+
+        theme_classic()+
+        theme(plot.title=element_text(size=14,hjust=0.5,face="plain"),axis.text.y=element_text(size=14),axis.title.y=element_text(size=14),axis.text.x=element_text(size=14),axis.title.x=element_text(size=14),panel.background=element_rect(fill="white",color="black"),panel.grid.major=element_line(color="grey90"),panel.grid.minor=element_line(color=NA))
+        #scale_x_discrete(limits=factor(y_reversed))
+allstates_plot
+
+
+#using the attributes to unscale & plot right values on x axis
+scaled_y <- as.data.frame(allstates$x)
+y_reversed <- (scaled_y * attr(scaled_y, 'scaled:scale')) + attr(scaled_y, 'scaled:center')
 
 ## higher infestation in winter, higher pH in winter (pH decreases with higher T)
-
 # modified state/bay/season and got rid of bay
-# + Tissue_g_sc
-# + State*Season, State*Culture: DOES NOT CONVERGE
 # ggpredict, ggeffects
+# The intercept is the predicted value of the dependent variable when the independent variables are 0
+# estimate of intercept, -2.363988, is the log odd of infested being 1
+# a 1 unit increase in culture on is associate with a 0.44 increase in the log odd of infested being 1
+
 
 ######################## 
 ## WASHINGTON # similar number bay to farm
@@ -100,25 +123,4 @@ summary(modelak)
 
 
 
-
-## trying out a plot
-allstates <- ggpredict(model1,c("y_sc","Season"))
-
-allstates_plot<-ggplot(allstates,aes(x,predicted,color=group), color=group)+
-        scale_color_manual(values=c("#7FCDBB","#FED976"))+ #F03B20
-        geom_point(size=4)+
-        geom_errorbar(data=allstates,mapping=aes(x=x,ymin=conf.low,ymax=conf.high),width=0.03)+
-        geom_line(aes(group=group))+
-        xlab("Shell height")+
-        ylab(expression(paste("Predicted infestation")))+
-        theme_minimal()+
-        theme(plot.title=element_text(size=14,hjust=0.5,face="plain"),axis.text.y=element_text(size=10),axis.title.y=element_text(size=9),axis.text.x=element_text(size=14),axis.title.x=element_text(size=10),panel.background=element_rect(fill="white",color="black"),panel.grid.major=element_line(color="grey95"),panel.grid.minor=element_line(color=NA),plot.margin=unit(c(0,0,0,0),"cm"))+
-        #scale_x_discrete(limits=rev(levels(allstates$x)),labels=c("fresh","frozen"))+
-        theme(legend.position="none")
-allstates_plot
-
-
-# The intercept is the predicted value of the dependent variable when the independent variables are 0
-# estimate of intercept, -2.363988, is the log odd of infested being 1
-# a 1 unit increase in culture on is associate with a 0.44 increase in the log odd of infested being 1
 
