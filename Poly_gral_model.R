@@ -57,7 +57,7 @@ prevalence$Year_sc <- scale(prevalence$Year, center = TRUE, scale = TRUE)
 
 ## MODEL TESTING FOR PREVALENCE - ALL STATES
 ########################
-model1 <- glmer(Infested ~ y_sc + Culture + Ploidy + Season + Thick_sc + (1|Year_sc) + (1|State/Farm), family="binomial", data = prevalence)
+model1 <- glmer(Infested ~ y + Culture + Ploidy + Season + Thick_sc + (1|Year_sc) + (1|State/Farm), family="binomial", data = prevalence)
 summary(model1)
 anova(model1)
 vif(model1)
@@ -67,25 +67,50 @@ summary(model2)
 anova(model2)
 vif(model2)
 
-## trying out a plot
-allstates <- ggpredict(model1,c("y_sc","Season"))
+## PLOTTING MODEL 1
+########################
+allstates <- ggpredict(model1,c("y","Season"))
 
-allstates_plot<-ggplot(allstates,aes(x,predicted,color=group), color=group)+
-        scale_color_manual(values=c("blue","turquoise"))+ #F03B20 #7FCDBB
-        geom_point(size=4)+
-        geom_errorbar(data=allstates,mapping=aes(x=x,ymin=conf.low,ymax=conf.high),width=0.03)+
-        geom_line(aes(group=group))+
-        xlab("Shell height")+
-        ylab(expression(paste("Predicted infestation")))+
-        theme_classic()+
-        theme(plot.title=element_text(size=14,hjust=0.5,face="plain"),axis.text.y=element_text(size=14),axis.title.y=element_text(size=14),axis.text.x=element_text(size=14),axis.title.x=element_text(size=14),panel.background=element_rect(fill="white",color="black"),panel.grid.major=element_line(color="grey90"),panel.grid.minor=element_line(color=NA))
-        #scale_x_discrete(limits=factor(y_reversed))
+allstates_plot<-ggplot(allstates,aes(x,predicted,color=group), color=group) +
+        scale_color_manual(values=wes_palette("GrandBudapest1", n = 2)) + 
+        geom_point(size=4) +
+        geom_errorbar(data=allstates, mapping=aes(x=x, ymin=conf.low, ymax=conf.high), width=0.03) +
+        geom_line(aes(group=group)) +
+        xlab("Shell height (cm)") +
+        ylab(expression(paste("Predicted infestation"))) +
+        theme_classic() +
+        guides(color=guide_legend("Season")) +
+        theme(plot.title=element_text(size=14,hjust=0.5,face="plain"), axis.text.y=element_text(size=14), 
+        axis.title.y=element_text(size=14), axis.text.x=element_text(size=14), axis.title.x=element_text(size=14),
+        panel.grid.minor=element_line(color=NA))
 allstates_plot
 
+## PLOTTING MODEL 2
+########################
+summary(model2)
+allstates2 <- ggpredict(model2,c("Culture","State"))
 
-#using the attributes to unscale & plot right values on x axis
-scaled_y <- as.data.frame(allstates$x)
-y_reversed <- (scaled_y * attr(scaled_y, 'scaled:scale')) + attr(scaled_y, 'scaled:center')
+allstates_plot2 <- plot(allstates2, facet=TRUE) +
+        scale_color_manual(values=wes_palette("GrandBudapest1", n = 4)) + 
+        geom_point(size=4) +
+        ylab(expression(paste("Predicted infestation"))) +
+        theme_classic() +
+        ylim(0,1) +
+        theme(plot.title=element_blank())
+allstates_plot2 
+
+allstates3 <- ggpredict(model2,c("Season","State"))
+
+allstates_plot3 <- plot(allstates3, facet=TRUE) +
+        scale_color_manual(values=wes_palette("GrandBudapest1", n = 4)) + 
+        geom_point(size=4) +
+        ylab(expression(paste("Predicted infestation"))) +
+        theme_classic() +
+        ylim(0,1) +
+        theme(plot.title=element_blank())
+allstates_plot3
+
+
 
 ## higher infestation in winter, higher pH in winter (pH decreases with higher T)
 # modified state/bay/season and got rid of bay
