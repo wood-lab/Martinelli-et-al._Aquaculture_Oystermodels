@@ -10,6 +10,7 @@ library(lubridate)
 library(devtools)
 library(ggeffects)
 library(statmod)
+library(wesanderson)
 
 ###########################################################
 ## ADDING PREVALENCE DATASET
