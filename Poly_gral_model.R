@@ -60,13 +60,13 @@ prevalence$Year_sc <- scale(prevalence$Year, center = TRUE, scale = TRUE)
 ########################
 model1 <- glmer(Infested ~ y + Culture + Ploidy + Season + Thick_sc + (1|Year_sc) + (1|State/Farm), family="binomial", data = prevalence)
 summary(model1)
-anova(model1)
+anova(model1) # figure out p-values (schisto analysis folder)
 vif(model1)
 
 model2 <- glmer(Infested ~ y_sc + Ploidy + Season*State + Culture*State + (1|Year_sc) + (1|Farm), family="binomial", data = prevalence)
 summary(model2)
-anova(model2)
-vif(model2)
+anova(model2) # figure out p-values
+vif(model2) 
 
 ## PLOTTING MODEL 1
 ########################
