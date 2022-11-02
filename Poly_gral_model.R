@@ -13,11 +13,25 @@ library(statmod)
 library(wesanderson)
 
 ###########################################################
-## ADDING PREVALENCE DATASET
+## ADDING DATASETS
 ###########################################################
+summary_all <- read.table("sampling summary.csv", header=T,sep=",")
+
 prevalence <- read.table("master_spreadsheet_all.csv", header=T,sep=",")
 prevalence <- subset(prevalence, prevalence$Valve =='R') # only keep R valves
 # dim: 4085, 19 
+
+#########################
+#PLOTTING PREV PER STATE
+
+prev_state <- ggplot(prevalence, aes(x= State, y= Infested, fill= State, show.legend = FALSE))  +
+        #geom_abline(slope = 0, intercept = mean(DF), na.rm=T, lwd=0.5, col='black', lty=2) +
+        geom_boxplot(alpha=0.7, lwd=1, outlier.shape = NA, show.legend = FALSE) + 
+        geom_point(stat = "identity", size= 4, shape = 21, lwd=2, show.legend = FALSE) + 
+        #ylim(0,45) +
+        scale_fill_manual(values=wes_palette("GrandBudapest1", n = 4)) + 
+        labs(x = 'State', y = 'Infested', size=16) 
+prev_state + theme_classic(base_size = 18) + theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
 
 ########################
 # CHECKING FOR CORRELATION IN oyster metrics
@@ -65,7 +79,7 @@ vif(model1)
 car::Anova(model1, type=3) # getting p-values 
 
 
-model2 <- glmer(Infested ~ y_sc + Ploidy + Season*State + Culture*State + (1|Year_sc) + (1|Farm), family="binomial", data = prevalence)
+model2 <- glmer(Infested ~ y_sc + Season*State + Culture*State + (1|Year_sc) + (1|Farm), family="binomial", data = prevalence)
 summary(model2)
 anova(model2) 
 vif(model2) 
