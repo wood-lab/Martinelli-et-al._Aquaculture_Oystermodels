@@ -24,14 +24,22 @@ prevalence <- subset(prevalence, prevalence$Valve =='R') # only keep R valves
 #########################
 #PLOTTING PREV PER STATE
 
-prev_state <- ggplot(prevalence, aes(x= State, y= Infested, fill= State, show.legend = FALSE))  +
+prev_state <- ggplot(summary_all, aes(x= State, y= Prevalence*100, fill= State, show.legend = FALSE))  +
         #geom_abline(slope = 0, intercept = mean(DF), na.rm=T, lwd=0.5, col='black', lty=2) +
         geom_boxplot(alpha=0.7, lwd=1, outlier.shape = NA, show.legend = FALSE) + 
         geom_point(stat = "identity", size= 4, shape = 21, lwd=2, show.legend = FALSE) + 
         #ylim(0,45) +
         scale_fill_manual(values=wes_palette("GrandBudapest1", n = 4)) + 
-        labs(x = 'State', y = 'Infested', size=16) 
+        labs(x = 'State', y = 'Prevalence', size=16) 
 prev_state + theme_classic(base_size = 18) + theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
+
+data_mean <- summary_all %>%
+        group_by(State) %>% #
+        summarize_at(vars(Prevalence), list(mean = mean), na.rm=TRUE)
+
+data_state <- summary_all %>%
+        group_by(State) %>% #
+        summarize_at(vars(Total.oysters), list(sum = sum), na.rm=TRUE)
 
 ########################
 # CHECKING FOR CORRELATION IN oyster metrics
