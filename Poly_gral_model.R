@@ -52,6 +52,7 @@ prevalence$z <- as.numeric(prevalence$z)
 
 prevalence.mat <- prevalence[, c(6,13:18)] # selecting the cols with 
 matrix <- cor(prevalence.mat, use="pairwise.complete.obs")
+
 par(xpd = TRUE)
 corrplot(matrix,method="number",type="lower",tl.col="black",tl.srt=45,mar=c(0,0,0,0))
 
