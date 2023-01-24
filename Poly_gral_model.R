@@ -122,27 +122,26 @@ allstates_plot
 ## PLOTTING MODEL 2
 ########################
 summary(model2)
-allstates2 <- ggpredict(model2,c("Culture","State"))
+allstates2 <- ggpredict(model2,c("State", "Culture"))
 
-allstates_plot2 <- plot(allstates2, facet=TRUE) +
-        scale_color_manual(values=wes_palette("GrandBudapest1", n = 4)) + 
-        geom_point(size=4) +
-        ylab(expression(paste("Predicted infestation"))) +
-        theme_classic() +
+#level_order <- c('CA', 'OR', 'WA', 'AK') 
+
+allstates_plot2 <- plot(allstates2) +
+        scale_color_manual(values=wes_palette("GrandBudapest1", n = 2)) + 
         ylim(0,1) +
-        theme(plot.title=element_blank())
-allstates_plot2 
+        labs(x = 'State', y = 'Predicted infestation', size=16)
 
-allstates3 <- ggpredict(model2,c("Season","State"))
+allstates_plot2 +  theme_classic(base_size = 18) + theme(plot.title=element_blank(), axis.text.x = element_text(angle = 90, vjust = 0.5))
 
-allstates_plot3 <- plot(allstates3, facet=TRUE) +
-        scale_color_manual(values=wes_palette("GrandBudapest1", n = 4)) + 
-        geom_point(size=4) +
-        ylab(expression(paste("Predicted infestation"))) +
-        theme_classic() +
+
+allstates3 <- ggpredict(model2,c("State","Season"))
+
+allstates_plot3 <- plot(allstates3) +
+        scale_color_manual(values=wes_palette("GrandBudapest1", n = 2)) + 
         ylim(0,1) +
-        theme(plot.title=element_blank())
-allstates_plot3
+        labs(x = 'State', y = 'Predicted infestation', size=16)
+
+allstates_plot3 +  theme_classic(base_size = 18) + theme(plot.title=element_blank(), axis.text.x = element_text(angle = 90, vjust = 0.5))
 
 
 
