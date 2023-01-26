@@ -27,7 +27,6 @@ prevalence <- subset(prevalence, prevalence$Valve =='R') # only keep R valves
 level_order <- c('CA', 'OR', 'WA', 'AK') 
 
 prev_state <- ggplot(summary_all, aes(x= factor(State, level= level_order), y= Prevalence, fill= State, show.legend = FALSE))  +
-        #geom_abline(slope = 0, intercept = mean(DF), na.rm=T, lwd=0.5, col='black', lty=2) +
         stat_boxplot(geom= 'errorbar' , width = 0.3, position = position_dodge(width = 0.75) ) +
         geom_boxplot(alpha=0.7, lwd=1, outlier.shape = NA, show.legend = FALSE) + 
         geom_point(stat = "identity", size= 4, shape = 21, lwd=2, show.legend = FALSE) + 
@@ -122,19 +121,48 @@ allstates_plot
 ## PLOTTING MODEL 2
 ########################
 summary(model2)
+
+# allstates_plot2 <- plot(allstates2) +
+#         scale_color_manual(values=wes_palette("GrandBudapest1", n = 4)) + 
+#         ylim(0,1) +
+#         #scale_x_discrete(limits = c("CA","OR","WA", "AK")) +
+#         labs(x = 'State', y = 'Predicted infestation', size=16)
+# 
+# allstates_plot2 +  theme_classic(base_size = 18) + theme(plot.title=element_blank(), axis.text.x = element_text(angle = 90, vjust = 0.5))
+
 allstates2 <- ggpredict(model2,c("State", "Culture"))
+mod2_dd <- as.data.frame(allstates2)
+mod2_dd$culture <- paste(mod2_dd$x, mod2_dd$group, sep=" ")
+level_order <- c('CA on','CA off','OR on','OR off','WA on','WA off','AK on','AK off') 
 
-#level_order <- c('CA', 'OR', 'WA', 'AK') 
 
-allstates_plot2 <- plot(allstates2) +
-        scale_color_manual(values=wes_palette("GrandBudapest1", n = 2)) + 
+Fig5B <- ggplot(mod2_dd, aes(x= factor(culture, level= level_order), y= predicted, fill= x, show.legend = FALSE))  +
+        stat_boxplot(geom= 'errorbar', width = 0.3, position = position_dodge(width = 0.75)) +
+        geom_errorbar(data=mod2_dd, mapping=aes(x=culture, ymin=conf.low, ymax=conf.high), width=0.03) +
+        geom_boxplot(alpha=0.7, lwd=1, outlier.shape = NA, show.legend = FALSE) + 
+        geom_point(stat = "identity", size= 4, shape = 21, lwd=2, show.legend = FALSE) + 
         ylim(0,1) +
-        labs(x = 'State', y = 'Predicted infestation', size=16)
-
-allstates_plot2 +  theme_classic(base_size = 18) + theme(plot.title=element_blank(), axis.text.x = element_text(angle = 90, vjust = 0.5))
+        scale_fill_manual(values=wes_palette("GrandBudapest1", n = 4)) + 
+        labs(x = 'State', y = 'Predicted Infestation', size=16) 
+Fig5B + theme_classic(base_size = 18) + theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
 
 
 allstates3 <- ggpredict(model2,c("State","Season"))
+allstates3_dd <- as.data.frame(allstates3)
+allstates3_dd$season <- paste(allstates3_dd$x, allstates3_dd$group, sep=" ")
+level_order <- c('CA Summer','CA Winter','OR Summer','OR Winter','WA Summer','WA Winter','AK Summer','AK Winter') 
+
+
+Fig5A <- ggplot(allstates3_dd, aes(x= factor(season, level= level_order), y= predicted, fill= x, show.legend = FALSE))  +
+        stat_boxplot(geom= 'errorbar', width = 0.3, position = position_dodge(width = 0.75)) +
+        geom_errorbar(data=allstates3_dd, mapping=aes(x=season, ymin=conf.low, ymax=conf.high), width=0.03) +
+        geom_boxplot(alpha=0.7, lwd=1, outlier.shape = NA, show.legend = FALSE) + 
+        geom_point(stat = "identity", size= 4, shape = 21, lwd=2, show.legend = FALSE) + 
+        ylim(0,1) +
+        scale_fill_manual(values=wes_palette("GrandBudapest1", n = 4)) + 
+        labs(x = 'State', y = 'Predicted Infestation', size=16) 
+Fig5A + theme_classic(base_size = 18) + theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
+
 
 allstates_plot3 <- plot(allstates3) +
         scale_color_manual(values=wes_palette("GrandBudapest1", n = 2)) + 
