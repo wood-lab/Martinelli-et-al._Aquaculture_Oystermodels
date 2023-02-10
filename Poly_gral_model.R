@@ -104,10 +104,10 @@ car::Anova(model2, type=3) # getting p-values
 ########################
 allstates <- ggpredict(model1,c("y","Season"))
 
-allstates_plot<-ggplot(allstates,aes(x,predicted,color=group), color=group) +
+allstates_plot <- ggplot(allstates,aes(x,predicted,color=group), color=group) +
         scale_color_manual(values=wes_palette("GrandBudapest1", n = 2)) + 
         geom_point(size=4) +
-        geom_errorbar(data=allstates, mapping=aes(x=x, ymin=conf.low, ymax=conf.high), width=0.03) +
+        geom_errorbar(data=allstates, mapping=aes(x=x, ymin=conf.low, ymax=conf.high), width=1, position = position_dodge(width = 0.5)) +
         geom_line(aes(group=group)) +
         xlab("Shell height (cm)") +
         ylab(expression(paste("Predicted infestation"))) +
