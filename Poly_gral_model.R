@@ -113,9 +113,9 @@ allstates_plot <- ggplot(allstates,aes(x,predicted,color=group), color=group) +
         ylab(expression(paste("Predicted infestation"))) +
         theme_classic() +
         guides(color=guide_legend("Season")) +
-        theme(plot.title=element_text(size=14,hjust=0.5,face="plain"), axis.text.y=element_text(size=14), 
-        axis.title.y=element_text(size=14), axis.text.x=element_text(size=14), axis.title.x=element_text(size=14),
-        panel.grid.minor=element_line(color=NA))
+        theme(plot.title=element_text(size=16,hjust=0.5,face="plain"), axis.text.y=element_text(size=16), 
+        axis.title.y=element_text(size=16), axis.text.x=element_text(size=16),legend.text = element_text(size=14), 
+        axis.title.x=element_text(size=16), legend.title = element_text(size=14),panel.grid.minor=element_line(color=NA))
 allstates_plot
 
 ## PLOTTING MODEL 2
